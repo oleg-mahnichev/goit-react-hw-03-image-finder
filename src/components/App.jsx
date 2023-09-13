@@ -79,15 +79,12 @@ export class App extends Component {
         <Searchbar onSubmit={this.handleFormSubmit} />
         <ImageGallery images={images} onImageClick={this.handleImageClick} />
         {isLoading && <Loader />}
-        {/* {images.length === 0 && !isLoading && (
-          <p className="no-results">Ooops Make a new search!!!</p>
-        )} */}
         {images.length > 0 && images.length >= 12 && !isLoading && (
           <Button onClick={this.handleLoadMore} />
         )}
-        {/* {showModal && (
+        {showModal && (
           <Modal image={largeImageURL} onClose={this.handleCloseModal} />
-        )} */}
+        )}
       </div>
     );
   }
