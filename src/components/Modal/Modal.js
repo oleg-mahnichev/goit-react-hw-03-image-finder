@@ -1,31 +1,20 @@
-import React, { Component } from 'react';
+import React from 'react';
+import ReactModal from 'react-modal';
 
-class Modal extends Component {
-    componentDidMount() {
-        window.addEventListener('keydown', this.handleKeyDown);
-    }
 
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.handleKeyDown);
-    }
 
-    handleKeyDown = (e) => {
-        if (e.code === 'Escape') {
-            this.props.onClose();
-        }
-    };
+const CustomModal = ({ isOpen, onRequestClose, largeImageURL }) => {
+    return (
+        <ReactModal
+            isOpen={isOpen}
+            onRequestClose={onRequestClose}
+            contentLabel="Large Image Modal"
 
-    render() {
-        const { image } = this.props;
+        >
+            <img src={largeImageURL} alt="Large" />
+            {/* <button onClick={onRequestClose}>Close Modal</button> */}
+        </ReactModal>
+    );
+};
 
-        return (
-            <div className="overlay" onClick={this.props.onClose}>
-                <div className="modal">
-                    <img src={image} alt="" />
-                </div>
-            </div>
-        );
-    }
-}
-
-export default Modal;
+export default CustomModal;

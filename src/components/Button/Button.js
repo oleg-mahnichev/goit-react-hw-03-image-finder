@@ -1,12 +1,17 @@
-// Button.js
 import React from 'react';
-import '../styles.css'
+import { ButtonLM } from "./Button.styled"
 
-const Button = ({ onClick, disabled }) => {
+const Button = ({ onClick, disabled, showLoadMoreMessage }) => {
+    const handleClick = () => {
+        if (!showLoadMoreMessage) {
+            onClick();
+        }
+    };
+
     return (
-        <button type="button" className="Button" onClick={onClick} disabled={disabled}>
-            <span className="button-label">Load more</span>
-        </button>
+        <ButtonLM type="button" className="Button" onClick={handleClick} disabled={disabled || showLoadMoreMessage}>
+            {showLoadMoreMessage ? 'No more images to load' : 'Load more'}
+        </ButtonLM>
     );
 };
 

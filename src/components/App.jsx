@@ -4,7 +4,7 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
-import Modal from './Modal/Modal';
+import CustomModal from './Modal/Modal'; // Імпортуємо компонент Modal
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 
@@ -15,7 +15,8 @@ export class App extends Component {
     page: 1,
     isLoading: false,
     showModal: false,
-    largeImageURL: '',
+    largeImageURL: '', // Додаємо стан для URL великого зображення
+    totalImages: 0, // Оголошуємо totalImages
   };
 
   async componentDidUpdate(prevProps, prevState) {
@@ -25,7 +26,7 @@ export class App extends Component {
   }
 
   handleFormSubmit = query => {
-    this.setState({ query, images: [], page: 1 });
+    this.setState({ query, images: [], page: 1, totalImages: 0 }); // Скидаємо totalImages при новому пошуковому запиті
   };
 
   fetchImages = () => {
@@ -38,10 +39,16 @@ export class App extends Component {
         `https://pixabay.com/api/?q=${query}&page=${page}&key=${apiKey}&image_type=photo&orientation=horizontal&per_page=12`
       )
       .then(response => {
-        this.setState(prevState => ({
-          images: [...prevState.images, ...response.data.hits],
-          page: prevState.page + 1,
-        }));
+        if (response.data.hits.length === 0) {
+          // Повертаємо помилку, якщо результатів немає
+          toast.error('Зображення не знайдено');
+        } else {
+          this.setState(prevState => ({
+            images: [...prevState.images, ...response.data.hits],
+            page: prevState.page + 1,
+            totalImages: response.data.totalHits, // Встановлюємо totalImages при завантаженні даних
+          }));
+        }
       })
       .catch(error => {
         toast.error('Помилка завантаження зображень', error);
@@ -71,7 +78,8 @@ export class App extends Component {
   };
 
   render() {
-    const { images, isLoading, showModal, largeImageURL } = this.state;
+    const { images, isLoading, showModal, largeImageURL, totalImages } =
+      this.state;
 
     return (
       <div className="App">
@@ -80,11 +88,19 @@ export class App extends Component {
         <ImageGallery images={images} onImageClick={this.handleImageClick} />
         {isLoading && <Loader />}
         {images.length > 0 && images.length >= 12 && !isLoading && (
-          <Button onClick={this.handleLoadMore} />
+          <Button
+            onClick={this.handleLoadMore}
+            disabled={isLoading}
+            showLoadMoreMessage={
+              images.length === 0 || images.length === totalImages
+            }
+          />
         )}
-        {showModal && (
-          <Modal image={largeImageURL} onClose={this.handleCloseModal} />
-        )}
+        <CustomModal
+          isOpen={showModal}
+          onRequestClose={this.handleCloseModal}
+          largeImageURL={largeImageURL}
+        />
       </div>
     );
   }

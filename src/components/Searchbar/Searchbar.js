@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { toast } from 'react-hot-toast';
 import { FaSearch } from 'react-icons/fa';
-import { Conteiner, SearchForm, SearchInput } from "./Searchbar.styled";
-
+import { Conteiner, SearchForm, SearchInput, SearchButton } from './Searchbar.styled'; 
 
 class Searchbar extends Component {
     state = {
@@ -14,18 +13,19 @@ class Searchbar extends Component {
         this.setState({ query: e.target.value });
     };
 
-    handleSearch = () => {
+    handleSubmit = (e) => {
+        e.preventDefault();
         const { query, prevQuery } = this.state;
 
         if (!query.trim()) {
-            toast.error('Write your search');
+            toast.error('Запит порожній');
             return;
         }
 
         if (query !== prevQuery) {
             this.props.onSubmit(query);
         } else {
-            toast.error('The search query is the same as the previous one.');
+            toast.error('Запит такий самий, як попередній.');
         }
 
         this.setState({ prevQuery: query });
@@ -33,7 +33,7 @@ class Searchbar extends Component {
 
     handleKeyPress = (e) => {
         if (e.key === 'Enter') {
-            this.handleSearch();
+            this.handleSubmit(e);
         }
     };
 
@@ -41,26 +41,21 @@ class Searchbar extends Component {
         const { query } = this.state;
 
         return (
-            <Conteiner>
-                <SearchForm>
+            <Conteiner className="searchbar">
+                <SearchForm className="form" onSubmit={this.handleSubmit}>
                     <SearchInput
-                        className="SearchForm-input"
+                        className="input"
                         type="text"
                         autoComplete="off"
                         autoFocus
-                        placeholder="Search images and photos"
+                        placeholder="Пошук зображень і фото"
                         value={query}
                         onChange={this.handleChange}
                         onKeyPress={this.handleKeyPress}
                     />
-                    <button
-
-                        type="button"
-                        className="SearchForm-button"
-                        onClick={this.handleSearch}
-                    >
-                        <FaSearch />
-                    </button>
+                    <SearchButton type="submit">
+                        <FaSearch className="SearchIcon" />
+                    </SearchButton>
                 </SearchForm>
             </Conteiner>
         );
